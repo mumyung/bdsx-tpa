@@ -4,9 +4,8 @@
 - [기능](#기능)
 
 # TPA Plugin
--   [OmletArcade](https://omlet.gg/profile/mumyung1507)
 
-## 기능
+####기능
 
 ```
 - /tpa (상대방에게 tp를 요청합니다)
