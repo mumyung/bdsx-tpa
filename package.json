@@ -1,0 +1,15 @@
+{
+  "name": "tpa",
+  "version": "1.0.0",
+  "description": "A Tpa Plugin for bdsx",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "tpa",
+    "tpaccept"
+  ],
+  "author": "mumyung1507",
+  "license": "ISC"
+}
