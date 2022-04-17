@@ -11,11 +11,12 @@
 import { events } from "bdsx/event";
 import { ActorCommandSelector, CommandPermissionLevel, PlayerCommandSelector } from "bdsx/bds/command";
 import { MinecraftPacketIds } from "bdsx/bds/packetids";
-import { ServerPlayer } from "bdsx/bds/player";
+import { Player, ServerPlayer } from "bdsx/bds/player";
 import { command } from "bdsx/command";
 import { CANCEL } from "bdsx/common";
 import { bedrockServer } from "bdsx/launcher";
 import * as fs from "fs";
+import { networkInterfaces } from "os";
 
 let tpa: any = {};
 
@@ -31,8 +32,16 @@ command.register("tpa", "티피 요청을 합니다.").overload((param, origin, 
     const actor = origin.getName();
         for (const player of param.target.newResults(origin, ServerPlayer)) {
             tpa[player.getName()] = actor
+            let ni = player.getNetworkIdentifier()
             fs.writeFileSync(`tpa.json`, JSON.stringify(tpa), "utf8")
-            bedrockServer.executeCommand(`tellraw "${player.getName()}" {"rawtext":[{"text":"§l§d${actor}§e님이 당신에게 티피요청을 보냈습니다 §b\n수락 하는방법: /tpaccept"}]}`)
+            bedrockServer.executeCommand(`tellraw "${player.getName()}" {"rawtext":[{"text":"§l§d${actor}§e님이 당신에게 티피요청을 보냈습니다 30초 뒤에 취소 됩니다. §b\n수락 하는방법: /tpaccept"}]}`)
+            bedrockServer.executeCommand(`tellraw "${actor}" {"rawtext":[{"text":"§l§d${player.getName()}§e님에게 TPA를 정상적으로 보냈습니다"}]}`)
+            setTimeout(() => {
+                tpa[player.getName()] = ""
+                fs.writeFileSync(`tpa.json`, JSON.stringify(tpa), "utf8")
+                bedrockServer.executeCommand(`tellraw "${player.getName()}" {"rawtext":[{"text":"§l${actor}님이 보낸 tpa 요청이 끝났습니다."}]}`)
+                bedrockServer.executeCommand(`tellraw "${actor}" {"rawtext":[{"text":"§l당신이 ${player.getName()}님에게 보낸 tpa 요청이 끝났습니다."}]}`)
+            }, 30001)
         }
     }, {
         target: PlayerCommandSelector,
@@ -53,6 +62,17 @@ command.register("tpaccept", "티피 요청을 받습니다.").overload((param, 
         }
     }
 }, {});
+command.register("tpadeny", "티피 요청을 거절 합니다.").overload((param, origin, op) => {
+    const actor = origin.getEntity();
+    if (actor?.isPlayer) {
+        let ni = actor.getNetworkIdentifier()
+        const tpas = JSON.parse(fs.readFileSync(`tpa.json`, "utf8"));
+        tpa[actor.getName()] = ""
+        fs.writeFileSync(`tpa.json`, JSON.stringify(tpa), "utf8")
+    }
+}, {
+    target: PlayerCommandSelector
+})
 
 
 
