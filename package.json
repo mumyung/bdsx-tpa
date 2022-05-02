@@ -1,8 +1,9 @@
 {
-  "name": "tpa",
+  "name": "@bdsx/tpa",
   "version": "1.0.0",
   "description": "A Tpa Plugin for bdsx",
   "main": "index.js",
+  "bdsxPlugin": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
